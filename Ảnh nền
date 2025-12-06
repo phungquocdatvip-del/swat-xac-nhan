@@ -1,0 +1,15 @@
+<div class="banner" id="home" style="
+    background: url('/mnt/data/A_vibrant_digital_illustration_for_\"Giọng_Hát_Việt.png') center/cover no-repeat;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 2rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 5px #000;
+">
+    Sân khấu rực rỡ, nơi ươm mầm tài năng nhí!
+</div>
+
+
