@@ -2,98 +2,154 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Quản lý đơn hàng</title>
+<title>Đặt hàng Online</title>
 <style>
-    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
-    h1 { text-align: center; color: #333; margin-bottom: 20px; }
-    table { width: 100%; border-collapse: collapse; background: #fff; }
-    th, td { padding: 12px; text-align: center; border-bottom: 1px solid #ddd; }
-    th { background: #007BFF; color: #fff; }
-    tr:hover { background: #f1f1f1; }
-    .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; color: white; margin: 2px; }
-    .btn-confirm { background-color: #28a745; }
-    .btn-cancel { background-color: #dc3545; }
-    .status { padding: 4px 8px; border-radius: 4px; color: white; display: inline-block; }
-    .status-pending { background-color: #ffc107; }
-    .status-confirmed { background-color: #28a745; }
-    .status-cancelled { background-color: #dc3545; }
+body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+h1 { text-align: center; color: #333; margin-bottom: 20px; }
+form { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; }
+input, select { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: 1px solid #ccc; }
+button { padding: 10px 20px; background: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer; }
+button:hover { background: #0056b3; }
 </style>
 </head>
 <body>
 
-<h1>Quản lý đơn hàng</h1>
+<h1>Đặt hàng Online</h1>
 
-<table id="ordersTable">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Khách hàng</th>
-            <th>Email</th>
-            <th>Sản phẩm</th>
-            <th>Số lượng</th>
-            <th>Tổng tiền</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Danh sách đơn hàng sẽ được JS thêm vào -->
-    </tbody>
-</table>
+<form id="orderForm">
+    <label>Họ và tên:</label>
+    <input type="text" id="name" required>
+    
+    <label>Email:</label>
+    <input type="email" id="email" required>
+    
+    <label>Số điện thoại:</label>
+    <input type="text" id="phone" required>
+    
+    <label>Địa chỉ nhận hàng:</label>
+    <input type="text" id="address" required>
+    
+    <label>Sản phẩm:</label>
+    <select id="product" required>
+        <option value="">-- Chọn sản phẩm --</option>
+        <option value="Áo Thun">Áo Thun</option>
+        <option value="Quần Jean">Quần Jean</option>
+        <option value="Giày">Giày</option>
+    </select>
+    
+    <label>Số lượng:</label>
+    <input type="number" id="qty" min="1" value="1" required>
+    
+    <button type="submit">Gửi đơn hàng</button>
+</form>
 
 <script>
-// Dữ liệu demo
-let orders = [
-    {id:1, name:"Nguyễn Văn A", email:"a@gmail.com", product:"Áo Thun", qty:2, total:400000, status:"Chờ xác nhận"},
-    {id:2, name:"Trần Thị B", email:"b@gmail.com", product:"Quần Jean", qty:1, total:500000, status:"Chờ xác nhận"},
-    {id:3, name:"Lê Văn C", email:"c@gmail.com", product:"Giày", qty:1, total:800000, status:"Chờ xác nhận"}
-];
+// Lấy dữ liệu từ LocalStorage hoặc tạo mới
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
 
-// Lưu/đọc từ LocalStorage
-if(localStorage.getItem("orders")){
-    orders = JSON.parse(localStorage.getItem("orders"));
-} else {
+// Xử lý gửi đơn hàng
+document.getElementById("orderForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const phone = document.getElementById("phone").value;
+    const address = document.getElementById("address").value;
+    const product = document.getElementById("product").value;
+    const qty = parseInt(document.getElementById("qty").value);
+
+    const totalPrice = product=="Áo Thun"?200000:product=="Quần Jean"?500000:800000;
+
+    const order = {
+        id: Date.now(),
+        name, email, phone, address,
+        product, qty, total: totalPrice*qty,
+        status: "Chờ xác nhận"
+    };
+
+    orders.push(order);
     localStorage.setItem("orders", JSON.stringify(orders));
-}
+    alert("Đặt hàng thành công!");
+    this.reset();
+});
+</script>
 
-// Render bảng
-function renderOrders(){
-    const tbody = document.querySelector("#ordersTable tbody");
-    tbody.innerHTML = "";
-    orders.forEach(order => {
-        let statusClass = "";
-        if(order.status=="Chờ xác nhận") statusClass="status-pending";
-        if(order.status=="Đã xác nhận") statusClass="status-confirmed";
-        if(order.status=="Đã hủy") statusClass="status-cancelled";
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Đặt hàng Online</title>
+<style>
+body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+h1 { text-align: center; color: #333; margin-bottom: 20px; }
+form { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; }
+input, select { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: 1px solid #ccc; }
+button { padding: 10px 20px; background: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer; }
+button:hover { background: #0056b3; }
+</style>
+</head>
+<body>
 
-        let tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${order.id}</td>
-            <td>${order.name}</td>
-            <td>${order.email}</td>
-            <td>${order.product}</td>
-            <td>${order.qty}</td>
-            <td>${order.total}</td>
-            <td><span class="status ${statusClass}">${order.status}</span></td>
-            <td>
-                ${order.status=="Chờ xác nhận" ? 
-                  `<button class="btn btn-confirm" onclick="updateStatus(${order.id}, 'Đã xác nhận')">Xác nhận</button>
-                   <button class="btn btn-cancel" onclick="updateStatus(${order.id}, 'Đã hủy')">Hủy</button>` 
-                  : "Đã xử lý"}
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
+<h1>Đặt hàng Online</h1>
 
-// Cập nhật trạng thái
-function updateStatus(id, status){
-    orders = orders.map(o => o.id===id ? {...o, status: status} : o);
+<form id="orderForm">
+    <label>Họ và tên:</label>
+    <input type="text" id="name" required>
+    
+    <label>Email:</label>
+    <input type="email" id="email" required>
+    
+    <label>Số điện thoại:</label>
+    <input type="text" id="phone" required>
+    
+    <label>Địa chỉ nhận hàng:</label>
+    <input type="text" id="address" required>
+    
+    <label>Sản phẩm:</label>
+    <select id="product" required>
+        <option value="">-- Chọn sản phẩm --</option>
+        <option value="Áo Thun">Áo Thun</option>
+        <option value="Quần Jean">Quần Jean</option>
+        <option value="Giày">Giày</option>
+    </select>
+    
+    <label>Số lượng:</label>
+    <input type="number" id="qty" min="1" value="1" required>
+    
+    <button type="submit">Gửi đơn hàng</button>
+</form>
+
+<script>
+// Lấy dữ liệu từ LocalStorage hoặc tạo mới
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+// Xử lý gửi đơn hàng
+document.getElementById("orderForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const phone = document.getElementById("phone").value;
+    const address = document.getElementById("address").value;
+    const product = document.getElementById("product").value;
+    const qty = parseInt(document.getElementById("qty").value);
+
+    const totalPrice = product=="Áo Thun"?200000:product=="Quần Jean"?500000:800000;
+
+    const order = {
+        id: Date.now(),
+        name, email, phone, address,
+        product, qty, total: totalPrice*qty,
+        status: "Chờ xác nhận"
+    };
+
+    orders.push(order);
     localStorage.setItem("orders", JSON.stringify(orders));
-    renderOrders();
-}
-
-renderOrders();
+    alert("Đặt hàng thành công!");
+    this.reset();
+});
 </script>
 
 </body>
