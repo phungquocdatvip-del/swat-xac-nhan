@@ -1,1 +1,28 @@
+<section id="vote">
+    <h2>Bình chọn thí sinh yêu thích</h2>
+    <form id="voteForm">
+        <input type="text" id="socialAccount" placeholder="Tên tài khoản mạng xã hội" required>
+        <input type="tel" id="phone" placeholder="Số điện thoại" required>
+        <input type="text" id="contestantCode" placeholder="Mã thí sinh muốn bình chọn" required>
+        <button type="button" id="voteBtn">Bình chọn</button>
+    </form>
+    <div class="vote-result" id="voteResult"></div>
+</section>
+
+<script>
+document.getElementById('voteBtn').addEventListener('click', function() {
+    const account = document.getElementById('socialAccount').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const code = document.getElementById('contestantCode').value.trim();
+
+    if(!account || !phone || !code){
+        alert('Vui lòng điền đầy đủ thông tin.');
+        return;
+    }
+
+    document.getElementById('voteResult').innerText = 
+        `Cảm ơn ${account}, bạn đã bình chọn thành công cho thí sinh mã ${code}!`;
+    document.getElementById('voteForm').reset();
+});
+</script>
 
