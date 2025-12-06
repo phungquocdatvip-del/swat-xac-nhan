@@ -35,18 +35,13 @@
     .news-item p { padding:0 10px 10px 10px; font-size:0.9rem; }
 
     form { max-width:500px; margin:auto; display:flex; flex-direction:column; gap:10px; background:#fff0f5; padding:20px; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.1);}
-    input, button, textarea { padding:10px; border-radius:8px; border:1px solid #ccc; font-size:1rem; width:100%; }
+    input, textarea, button { padding:10px; border-radius:8px; border:1px solid #ccc; font-size:1rem; width:100%; }
     button { background:#ff5f6d; color:white; border:none; cursor:pointer; }
     button:hover { background:#ff3b4f; }
-    #otp-section { display:none; }
     .vote-result { text-align:center; margin-top:20px; font-weight:bold; color:#ff5f6d; }
 
     footer { background:#ff5f6d; color:white; text-align:center; padding:20px; margin-top:50px;}
     footer a { color:white; margin:0 10px; text-decoration:none; }
-
-    .vote-btn { background:#ffcccb; border:none; padding:8px 15px; border-radius:8px; cursor:pointer; margin-top:10px; }
-    .vote-btn:hover { background:#ff9999; }
-    .vote-count { margin-top:5px; font-weight:bold; color:#ff5f6d; }
 </style>
 </head>
 <body>
@@ -123,13 +118,7 @@
         <input type="text" id="voterName" placeholder="Họ và tên của bạn" required>
         <input type="tel" id="phone" placeholder="Số điện thoại" required>
         <input type="text" id="contestantName" placeholder="Họ và tên thí sinh muốn bình chọn" required>
-        <button type="button" id="sendCodeBtn">Gửi mã bình chọn</button>
-
-        <div id="otp-section">
-            <input type="text" id="otpCode" placeholder="Nhập mã xác nhận" required>
-            <button type="button" id="verifyBtn">Xác nhận bình chọn</button>
-            <p id="timer"></p>
-        </div>
+        <button type="button" id="voteBtn">Bình chọn</button>
     </form>
     <div class="vote-result" id="voteResult"></div>
 </section>
@@ -153,55 +142,24 @@
 </footer>
 
 <script>
-let generatedCode = '';
-let countdown;
-
-document.getElementById('sendCodeBtn').addEventListener('click', function() {
+document.getElementById('voteBtn').addEventListener('click', function() {
     const name = document.getElementById('voterName').value.trim();
     const phone = document.getElementById('phone').value.trim();
     const contestant = document.getElementById('contestantName').value.trim();
 
-    if(!name || !phone || !contestant) {
-        alert('Vui lòng nhập đầy đủ thông tin.');
+    if(!name || !phone || !contestant){
+        alert('Vui lòng điền đầy đủ thông tin.');
         return;
     }
 
-    generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-    console.log('Mã OTP gửi đến số điện thoại (demo):', generatedCode);
-
-    alert('Mã xác nhận đã được gửi đến số điện thoại của bạn (demo in console).');
-
-    document.getElementById('otp-section').style.display = 'block';
-
-    let timeLeft = 60;
-    document.getElementById('timer').innerText = `Vui lòng nhập mã trong ${timeLeft} giây.`;
-    clearInterval(countdown);
-    countdown = setInterval(() => {
-        timeLeft--;
-        document.getElementById('timer').innerText = `Vui lòng nhập mã trong ${timeLeft} giây.`;
-        if(timeLeft <= 0) {
-            clearInterval(countdown);
-            alert('Hết thời gian nhập mã. Vui lòng gửi lại mã.');
-            document.getElementById('otp-section').style.display = 'none';
-        }
-    }, 1000);
-});
-
-document.getElementById('verifyBtn').addEventListener('click', function() {
-    const enteredCode = document.getElementById('otpCode').value.trim();
-    if(enteredCode === generatedCode) {
-        clearInterval(countdown);
-        document.getElementById('voteResult').innerText = `Cảm ơn ${document.getElementById('voterName').value}, bạn đã bình chọn thành công cho ${document.getElementById('contestantName').value}!`;
-        document.getElementById('voteForm').reset();
-        document.getElementById('otp-section').style.display = 'none';
-    } else {
-        alert('Mã xác nhận không đúng. Vui lòng thử lại.');
-    }
+    document.getElementById('voteResult').innerText = `Cảm ơn ${name}, bạn đã bình chọn thành công cho ${contestant}!`;
+    document.getElementById('voteForm').reset();
 });
 </script>
 
 </body>
 </html>
+
 
 
 
