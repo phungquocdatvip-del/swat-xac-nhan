@@ -1,1 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Swat Hà Thanh - Xác nhận thông tin</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f7f7f7;
+      padding: 15px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    .box {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    button {
+      background: #111;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #codeBox {
+      font-size: 20px;
+      color: red;
+      text-align: center;
+      font-weight: bold;
+      margin-top: 10px;
+      display: none;
+    }
+    .success {
+      color: green;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🌟 Swat Hà Thanh 🌟</h2>
+<p style="text-align:center">Điền thông tin để xác nhận đơn hàng</p>
+
+<div class="box">
+  <h3>1. Thông tin khách hàng</h3>
+
+  <input type="text" id="name" placeholder="Họ và tên">
+  <input type="text" id="phone" placeholder="Số điện thoại">
+  <input type="text" id="zalo" placeholder="Zalo của bạn">
+  <textarea id="address" placeholder="Địa chỉ nhận hàng"></textarea>
+  <textarea id="note" placeholder="Nội dung / sản phẩm muốn mua"></textarea>
+
+  <button onclick="createCode()">TẠO MÃ XÁC NHẬN</button>
+
+  <div id="codeBox"></div>
+</div>
+
+<div class="box">
+  <h3>2. Nhập mã xác nhận (đã gửi qua Zalo)</h3>
+  <input type="text" id="inputCode" placeholder="Nhập mã 6 số">
+  <button onclick="checkCode()">XÁC NHẬN</button>
+
+  <p id="result" class="success"></p>
+</div>
+
+<script>
+  let realCode = "";
+
+  function createCode() {
+    const name = document.getElementById("name").value;
+    const phone = document.getElementById("phone").value;
+    const zalo = document.getElementById("zalo").value;
+    const address = document.getElementById("address").value;
+
+    if (name == "" || phone == "" || zalo == "" || address == "") {
+      alert("Vui lòng điền đầy đủ thông tin!");
+      return;
+    }
+
+    realCode = Math.floor(100000 + Math.random() * 900000);
+
+    document.getElementById("codeBox").style.display = "block";
+    document.getElementById("codeBox").innerText =
+      "MÃ XÁC NHẬN: " + realCode + 
+      "\n\n👉 Shop hãy gửi mã này cho khách qua Zalo.";
+
+    document.getElementById("result").innerText = "";
+  }
+
+  function checkCode() {
+    const input = document.getElementById("inputCode").value;
+
+    if (input == realCode) {
+      document.getElementById("result").innerText =
+        "✅ XÁC NHẬN THÀNH CÔNG – Swat Hà Thanh đã ghi nhận!";
+    } else {
+      document.getElementById("result").innerText =
+        "❌ Mã sai, vui lòng kiểm tra lại.";
+    }
+  }
+</script>
+
+</body>
+</html>
 
