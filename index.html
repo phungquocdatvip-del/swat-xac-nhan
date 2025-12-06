@@ -1,70 +1,103 @@
-<?php
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Quản lý đơn hàng</title>
+<style>
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+    h1 { text-align: center; color: #333; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; background: #fff; }
+    th, td { padding: 12px; text-align: center; border-bottom: 1px solid #ddd; }
+    th { background: #007BFF; color: #fff; }
+    tr:hover { background: #f1f1f1; }
+    .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; color: white; margin: 2px; }
+    .btn-confirm { background-color: #28a745; }
+    .btn-cancel { background-color: #dc3545; }
+    .status { padding: 4px 8px; border-radius: 4px; color: white; display: inline-block; }
+    .status-pending { background-color: #ffc107; }
+    .status-confirmed { background-color: #28a745; }
+    .status-cancelled { background-color: #dc3545; }
+</style>
+</head>
+<body>
 
-require 'vendor/autoload.php'; // PHPMailer
+<h1>Quản lý đơn hàng</h1>
 
-$pdo = new PDO('mysql:host=localhost;dbname=shop','root','');
+<table id="ordersTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Khách hàng</th>
+            <th>Email</th>
+            <th>Sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Tổng tiền</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Danh sách đơn hàng sẽ được JS thêm vào -->
+    </tbody>
+</table>
 
-// Xác nhận đơn hàng
-if(isset($_GET['confirm_id'])){
-    $id = (int)$_GET['confirm_id'];
+<script>
+// Dữ liệu demo
+let orders = [
+    {id:1, name:"Nguyễn Văn A", email:"a@gmail.com", product:"Áo Thun", qty:2, total:400000, status:"Chờ xác nhận"},
+    {id:2, name:"Trần Thị B", email:"b@gmail.com", product:"Quần Jean", qty:1, total:500000, status:"Chờ xác nhận"},
+    {id:3, name:"Lê Văn C", email:"c@gmail.com", product:"Giày", qty:1, total:800000, status:"Chờ xác nhận"}
+];
 
-    // Lấy thông tin đơn hàng
-    $stmt = $pdo->prepare("SELECT * FROM orders WHERE id=?");
-    $stmt->execute([$id]);
-    $order = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // Cập nhật trạng thái
-    $stmt = $pdo->prepare("UPDATE orders SET status='Đã xác nhận' WHERE id=?");
-    $stmt->execute([$id]);
-
-    // Gửi email cho khách hàng
-    $mail = new PHPMailer(true);
-    try {
-        $mail->isSMTP();
-        $mail->Host = 'smtp.example.com'; // Thay bằng SMTP server của bạn
-        $mail->SMTPAuth = true;
-        $mail->Username = 'your_email@example.com';
-        $mail->Password = 'your_password';
-        $mail->SMTPSecure = 'tls';
-        $mail->Port = 587;
-
-        $mail->setFrom('your_email@example.com', 'Shop Online');
-        $mail->addAddress($order['customer_email'], $order['customer_name']);
-
-        $mail->isHTML(true);
-        $mail->Subject = 'Xác nhận đơn hàng #' . $order['id'];
-        $mail->Body    = "
-            Xin chào {$order['customer_name']},<br>
-            Đơn hàng của bạn đã được xác nhận.<br>
-            Sản phẩm: {$order['product_name']}<br>
-            Số lượng: {$order['quantity']}<br>
-            Tổng tiền: {$order['total_price']}<br>
-            Cảm ơn bạn đã đặt hàng!
-        ";
-
-        $mail->send();
-    } catch (Exception $e) {
-        echo "Mail không gửi được. Lỗi: {$mail->ErrorInfo}";
-    }
-
-    header("Location: orders.php");
-    exit;
+// Lưu/đọc từ LocalStorage
+if(localStorage.getItem("orders")){
+    orders = JSON.parse(localStorage.getItem("orders"));
+} else {
+    localStorage.setItem("orders", JSON.stringify(orders));
 }
 
-// Hủy đơn hàng
-if(isset($_GET['cancel_id'])){
-    $id = (int)$_GET['cancel_id'];
-    $stmt = $pdo->prepare("UPDATE orders SET status='Đã hủy' WHERE id=?");
-    $stmt->execute([$id]);
-    header("Location: orders.php");
-    exit;
+// Render bảng
+function renderOrders(){
+    const tbody = document.querySelector("#ordersTable tbody");
+    tbody.innerHTML = "";
+    orders.forEach(order => {
+        let statusClass = "";
+        if(order.status=="Chờ xác nhận") statusClass="status-pending";
+        if(order.status=="Đã xác nhận") statusClass="status-confirmed";
+        if(order.status=="Đã hủy") statusClass="status-cancelled";
+
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${order.id}</td>
+            <td>${order.name}</td>
+            <td>${order.email}</td>
+            <td>${order.product}</td>
+            <td>${order.qty}</td>
+            <td>${order.total}</td>
+            <td><span class="status ${statusClass}">${order.status}</span></td>
+            <td>
+                ${order.status=="Chờ xác nhận" ? 
+                  `<button class="btn btn-confirm" onclick="updateStatus(${order.id}, 'Đã xác nhận')">Xác nhận</button>
+                   <button class="btn btn-cancel" onclick="updateStatus(${order.id}, 'Đã hủy')">Hủy</button>` 
+                  : "Đã xử lý"}
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
 
-// Lấy danh sách đơn hàng
-$stmt = $pdo->query("SELECT * FROM orders ORDER BY created_at DESC");
-$orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
+// Cập nhật trạng thái
+function updateStatus(id, status){
+    orders = orders.map(o => o.id===id ? {...o, status: status} : o);
+    localStorage.setItem("orders", JSON.stringify(orders));
+    renderOrders();
+}
+
+renderOrders();
+</script>
+
+</body>
+</html>
+
 
 
